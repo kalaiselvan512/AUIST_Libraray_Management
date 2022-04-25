@@ -1,6 +1,7 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:url_launcher/url_launcher.dart';
+import 'package:istlibrary/screens/Login/login.dart';
+// import 'package:url_launcher/url_launcher.dart';
 
 class SignUppage extends StatelessWidget {
   const SignUppage({Key? key}) : super(key: key);
@@ -219,17 +220,12 @@ class SignUppage extends StatelessWidget {
                                         fontWeight: FontWeight.bold,
                                         decoration: TextDecoration.underline),
                                     recognizer: TapGestureRecognizer()
-                                      ..onTap = () async {
-                                        // ignore: deprecated_member_use
-                                        if (await canLaunch(
-                                                "https://discoverflutter.com") ==
-                                            true) {
-                                          // ignore: deprecated_member_use
-                                          launch("https://discoverflutter.com");
-                                        } else {
-                                          // ignore: avoid_print
-                                          print("Can't launch URL");
-                                        }
+                                      ..onTap = () {
+                                        Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                                builder: (context) =>
+                                                    const Loginpage()));
                                       })
                               ]),
                             ),
