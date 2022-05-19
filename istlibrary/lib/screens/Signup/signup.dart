@@ -1,10 +1,48 @@
+import 'dart:convert';
+
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart';
 import 'package:istlibrary/screens/Login/login.dart';
-// import 'package:url_launcher/url_launcher.dart';
 
-class SignUppage extends StatelessWidget {
+class SignUppage extends StatefulWidget {
   const SignUppage({Key? key}) : super(key: key);
+
+  @override
+  State<SignUppage> createState() => _SignUppageState();
+}
+
+class _SignUppageState extends State<SignUppage> {
+  final url = 'http://127.0.0.1:8000/api/signup/';
+
+  postdata() async {
+    try {
+      final response = await post(Uri.parse(url), body: {
+        "userid": userid.text,
+        "username": name.text,
+        "email": email.text,
+        "designation": designation.text,
+        "contact": contact.text,
+        "password": password.text
+      });
+      // print(response);
+      if (response.statusCode == 200) {
+        print(response.body);
+      } else {
+        print("Server Error");
+      }
+    } catch (e) {
+      print(e);
+    }
+  }
+
+  TextEditingController userid = TextEditingController();
+  TextEditingController name = TextEditingController();
+  TextEditingController designation = TextEditingController();
+  TextEditingController email = TextEditingController();
+  TextEditingController contact = TextEditingController();
+  TextEditingController password = TextEditingController();
+  TextEditingController confirmpassword = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -27,7 +65,7 @@ class SignUppage extends StatelessWidget {
         child: Card(
           color: const Color.fromRGBO(121, 197, 226, 1),
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(40), // if you need this
+            borderRadius: BorderRadius.circular(40),
             side: BorderSide(
               color: Colors.grey.withOpacity(0.9),
               width: 1,
@@ -77,12 +115,13 @@ class SignUppage extends StatelessWidget {
                         const SizedBox(
                           height: 30,
                         ),
-                        const SizedBox(
+                        SizedBox(
                           width: 400,
                           child: TextField(
+                            controller: userid,
                             cursorColor: Colors.black,
-                            keyboardType: TextInputType.emailAddress,
-                            decoration: InputDecoration(
+                            keyboardType: TextInputType.text,
+                            decoration: const InputDecoration(
                               contentPadding: EdgeInsets.only(
                                   left: 15, bottom: 11, top: 11, right: 15),
                               hintText: "User ID",
@@ -93,12 +132,13 @@ class SignUppage extends StatelessWidget {
                         const SizedBox(
                           height: 20,
                         ),
-                        const SizedBox(
+                        SizedBox(
                           width: 400,
                           child: TextField(
+                            controller: name,
                             cursorColor: Colors.black,
                             keyboardType: TextInputType.text,
-                            decoration: InputDecoration(
+                            decoration: const InputDecoration(
                               contentPadding: EdgeInsets.only(
                                   left: 15, bottom: 11, top: 11, right: 15),
                               hintText: "Name",
@@ -109,12 +149,13 @@ class SignUppage extends StatelessWidget {
                         const SizedBox(
                           height: 20,
                         ),
-                        const SizedBox(
+                        SizedBox(
                           width: 400,
                           child: TextField(
+                            controller: designation,
                             cursorColor: Colors.black,
                             keyboardType: TextInputType.text,
-                            decoration: InputDecoration(
+                            decoration: const InputDecoration(
                               contentPadding: EdgeInsets.only(
                                   left: 15, bottom: 11, top: 11, right: 15),
                               hintText: "Designation",
@@ -125,12 +166,13 @@ class SignUppage extends StatelessWidget {
                         const SizedBox(
                           height: 20,
                         ),
-                        const SizedBox(
+                        SizedBox(
                           width: 400,
                           child: TextField(
+                            controller: email,
                             cursorColor: Colors.black,
                             keyboardType: TextInputType.emailAddress,
-                            decoration: InputDecoration(
+                            decoration: const InputDecoration(
                               contentPadding: EdgeInsets.only(
                                   left: 15, bottom: 11, top: 11, right: 15),
                               hintText: "Email",
@@ -141,12 +183,13 @@ class SignUppage extends StatelessWidget {
                         const SizedBox(
                           height: 20,
                         ),
-                        const SizedBox(
+                        SizedBox(
                           width: 400,
                           child: TextField(
+                            controller: contact,
                             cursorColor: Colors.black,
                             keyboardType: TextInputType.number,
-                            decoration: InputDecoration(
+                            decoration: const InputDecoration(
                               contentPadding: EdgeInsets.only(
                                   left: 15, bottom: 11, top: 11, right: 15),
                               hintText: "Contact",
@@ -157,13 +200,14 @@ class SignUppage extends StatelessWidget {
                         const SizedBox(
                           height: 20,
                         ),
-                        const SizedBox(
+                        SizedBox(
                           width: 400,
                           child: TextField(
+                            controller: password,
                             cursorColor: Colors.black,
                             obscureText: true,
-                            keyboardType: TextInputType.emailAddress,
-                            decoration: InputDecoration(
+                            keyboardType: TextInputType.text,
+                            decoration: const InputDecoration(
                               contentPadding: EdgeInsets.only(
                                   left: 15, bottom: 11, top: 11, right: 15),
                               hintText: "Password",
@@ -174,13 +218,14 @@ class SignUppage extends StatelessWidget {
                         const SizedBox(
                           height: 20,
                         ),
-                        const SizedBox(
+                        SizedBox(
                           width: 400,
                           child: TextField(
+                            controller: confirmpassword,
                             cursorColor: Colors.black,
                             obscureText: true,
-                            keyboardType: TextInputType.emailAddress,
-                            decoration: InputDecoration(
+                            keyboardType: TextInputType.text,
+                            decoration: const InputDecoration(
                               contentPadding: EdgeInsets.only(
                                   left: 15, bottom: 11, top: 11, right: 15),
                               hintText: "Confirm Password",
@@ -192,7 +237,20 @@ class SignUppage extends StatelessWidget {
                           height: 50,
                         ),
                         ElevatedButton(
-                          onPressed: () {},
+                          // onPressed: postdata,
+                          onPressed: () {
+                            if (password.text != confirmpassword.text) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                      content: Text("Password Mismatch")));
+                            } else {
+                              postdata();
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                      content:
+                                          Text("User Signup Successfully")));
+                            }
+                          },
                           child: const Text('Submit'),
                           style: ElevatedButton.styleFrom(
                             primary: Colors.blue,

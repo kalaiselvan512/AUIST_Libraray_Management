@@ -1,8 +1,14 @@
 import 'package:flutter/material.dart';
 
-class LoginPage extends StatelessWidget {
+class LoginPage extends StatefulWidget {
   const LoginPage({Key? key}) : super(key: key);
 
+  @override
+  State<LoginPage> createState() => _LoginPageState();
+}
+
+class _LoginPageState extends State<LoginPage> {
+  bool notPasswordvisible = true;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -87,17 +93,29 @@ class LoginPage extends StatelessWidget {
                       const SizedBox(
                         height: 50,
                       ),
-                      const SizedBox(
+                      SizedBox(
                         width: 400,
                         child: TextField(
                           cursorColor: Colors.black,
-                          obscureText: true,
+                          obscureText: notPasswordvisible,
                           keyboardType: TextInputType.emailAddress,
                           decoration: InputDecoration(
-                            contentPadding: EdgeInsets.only(
+                            contentPadding: const EdgeInsets.only(
                                 left: 15, bottom: 11, top: 11, right: 15),
                             hintText: "Password",
-                            border: OutlineInputBorder(),
+                            suffixIcon: IconButton(
+                                onPressed: () {
+                                  setState(() {
+                                    notPasswordvisible = !notPasswordvisible;
+                                  });
+                                },
+                                icon: Icon(
+                                  !notPasswordvisible
+                                      ? Icons.visibility
+                                      : Icons.visibility_off,
+                                  color: Theme.of(context).primaryColorDark,
+                                )),
+                            border: const OutlineInputBorder(),
                           ),
                         ),
                       ),

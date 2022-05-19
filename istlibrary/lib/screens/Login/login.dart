@@ -1,10 +1,49 @@
+import 'dart:convert';
+import 'dart:html';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart';
+import 'package:istlibrary/screens/Home/home.dart';
 import 'package:istlibrary/screens/Signup/signup.dart';
-import 'package:url_launcher/url_launcher.dart';
+import 'package:localstorage/localstorage.dart';
 
-class Loginpage extends StatelessWidget {
+class Loginpage extends StatefulWidget {
   const Loginpage({Key? key}) : super(key: key);
+
+  @override
+  State<Loginpage> createState() => _LoginpageState();
+}
+
+class _LoginpageState extends State<Loginpage> {
+  final url = 'http://127.0.0.1:8000/api/login/';
+  // final Storage _localStorage = window.localStorage;
+  final LocalStorage storage = LocalStorage('lib_app');
+
+  TextEditingController userid = TextEditingController();
+  TextEditingController password = TextEditingController();
+
+  login() async {
+    try {
+      final response = await post(Uri.parse(url),
+          body: {"userid": userid.text, "password": password.text});
+
+      if (response.statusCode == 200) {
+        if (jsonDecode(response.body)['success'] == true) {
+          Navigator.push(context,
+              MaterialPageRoute(builder: (context) => const Homepage()));
+          storage.setItem('userid', userid.text);
+          storage.getItem('userid');
+        } else {
+          print(response.body);
+        }
+      } else {
+        print("Server Error");
+      }
+    } catch (e) {
+      print("error");
+      print(e);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -74,12 +113,13 @@ class Loginpage extends StatelessWidget {
                       const SizedBox(
                         height: 30,
                       ),
-                      const SizedBox(
+                      SizedBox(
                         width: 400,
                         child: TextField(
+                          controller: userid,
                           cursorColor: Colors.black,
                           keyboardType: TextInputType.emailAddress,
-                          decoration: InputDecoration(
+                          decoration: const InputDecoration(
                             contentPadding: EdgeInsets.only(
                                 left: 15, bottom: 11, top: 11, right: 15),
                             hintText: "User Id",
@@ -90,13 +130,14 @@ class Loginpage extends StatelessWidget {
                       const SizedBox(
                         height: 50,
                       ),
-                      const SizedBox(
+                      SizedBox(
                         width: 400,
                         child: TextField(
+                          controller: password,
                           cursorColor: Colors.black,
                           obscureText: true,
                           keyboardType: TextInputType.emailAddress,
-                          decoration: InputDecoration(
+                          decoration: const InputDecoration(
                             contentPadding: EdgeInsets.only(
                                 left: 15, bottom: 11, top: 11, right: 15),
                             hintText: "Password",
@@ -108,7 +149,7 @@ class Loginpage extends StatelessWidget {
                         height: 50,
                       ),
                       ElevatedButton(
-                        onPressed: () {},
+                        onPressed: login,
                         child: const Text('Submit'),
                         style: ElevatedButton.styleFrom(
                           primary: Colors.blue,

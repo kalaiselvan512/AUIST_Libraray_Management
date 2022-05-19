@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:localstorage/localstorage.dart';
 
 class TopBarContents extends StatefulWidget {
   final double opacity;
@@ -21,10 +22,12 @@ class _TopBarContentsState extends State<TopBarContents> {
     false,
     false
   ];
+  final LocalStorage storage = LocalStorage('lib_app');
 
   @override
   Widget build(BuildContext context) {
     var screenSize = MediaQuery.of(context).size;
+    String usr = storage.getItem('userid');
 
     return Container(
       color: Colors.white.withOpacity(widget.opacity),
@@ -40,9 +43,9 @@ class _TopBarContentsState extends State<TopBarContents> {
                   SizedBox(
                     width: screenSize.width / 4,
                   ),
-                  const Text(
-                    'Faculty',
-                    style: TextStyle(
+                  Text(
+                    usr,
+                    style: const TextStyle(
                       color: Color(0xFF077bd7),
                       fontSize: 26,
                       fontFamily: 'Raleway',
