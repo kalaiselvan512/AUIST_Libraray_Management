@@ -32,7 +32,6 @@ class _LoginpageState extends State<Loginpage> {
           Navigator.push(context,
               MaterialPageRoute(builder: (context) => const Homepage()));
           storage.setItem('userid', userid.text);
-          storage.getItem('userid');
         } else {
           print(response.body);
         }
