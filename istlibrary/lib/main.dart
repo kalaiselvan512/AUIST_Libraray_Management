@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:istlibrary/screens/Book_Info/books.dart';
+import 'package:istlibrary/screens/Book_Info/more_details.dart';
 import 'package:istlibrary/screens/Home/home.dart';
 import 'package:istlibrary/screens/Login/login.dart';
 import 'package:istlibrary/screens/Signup/signup.dart';
@@ -14,6 +16,8 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      // initialRoute: '/',
+      // routes: {'/': (context) => Loginpage(), '/home': (context) => Homepage()},
       debugShowCheckedModeBanner: false,
       title: 'IST Library Management',
       theme: ThemeData(

@@ -121,7 +121,7 @@ class _LoginpageState extends State<Loginpage> {
                           decoration: const InputDecoration(
                             contentPadding: EdgeInsets.only(
                                 left: 15, bottom: 11, top: 11, right: 15),
-                            hintText: "User Id",
+                            hintText: "Faculty ID",
                             border: OutlineInputBorder(),
                           ),
                         ),

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:istlibrary/screens/Book_Info/books.dart';
-import 'package:istlibrary/screens/History/history.dart';
-import 'package:istlibrary/screens/Lend_Books/lend.dart';
+import 'package:istlibrary_admin/Screens/Book_Info/create.dart';
+import 'package:istlibrary_admin/Screens/Issue_Books/issue_books.dart';
+import 'package:istlibrary_admin/screens/Book_Info/books.dart';
 import 'package:localstorage/localstorage.dart';
 
 class TopBarContents extends StatefulWidget {
@@ -138,17 +138,12 @@ class _TopBarContentsState extends State<TopBarContents> {
                         value ? _isHovering[2] = true : _isHovering[2] = false;
                       });
                     },
-                    onTap: () {
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => const LendedBooks()));
-                    },
+                    onTap: () {},
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         Text(
-                          'Lended books',
+                          'Renewal books',
                           style: TextStyle(
                               color: _isHovering[2]
                                   ? const Color(0xFF077bd7)
@@ -182,13 +177,13 @@ class _TopBarContentsState extends State<TopBarContents> {
                       Navigator.push(
                           context,
                           MaterialPageRoute(
-                              builder: (context) => const History()));
+                              builder: (context) => const IssueBooks()));
                     },
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         Text(
-                          'History',
+                          'Issue Books',
                           style: TextStyle(
                               color: _isHovering[3]
                                   ? const Color(0xFF077bd7)
@@ -202,6 +197,46 @@ class _TopBarContentsState extends State<TopBarContents> {
                           maintainState: true,
                           maintainSize: true,
                           visible: _isHovering[3],
+                          child: Container(
+                            height: 2,
+                            width: 20,
+                            color: Colors.blue,
+                          ),
+                        )
+                      ],
+                    ),
+                  ),
+                  SizedBox(width: screenSize.width / 15),
+                  InkWell(
+                    onHover: (value) {
+                      setState(() {
+                        value ? _isHovering[4] = true : _isHovering[4] = false;
+                      });
+                    },
+                    onTap: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => const CreateBooks()));
+                    },
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text(
+                          'Create Books',
+                          style: TextStyle(
+                              color: _isHovering[4]
+                                  ? const Color(0xFF077bd7)
+                                  : const Color(0xFF077bd7),
+                              fontWeight: FontWeight.bold,
+                              fontSize: 16),
+                        ),
+                        const SizedBox(height: 5),
+                        Visibility(
+                          maintainAnimation: true,
+                          maintainState: true,
+                          maintainSize: true,
+                          visible: _isHovering[4],
                           child: Container(
                             height: 2,
                             width: 20,

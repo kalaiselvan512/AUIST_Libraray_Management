@@ -50,6 +50,129 @@ def login(request):
     
     return Response(data)
 
+@api_view(['POST'])
+def liblogin(request):
+    data = {"success":False, "data":[], "description":None, "err":None}
+
+    id=request.data.get('userid',None)
+    password=request.data.get('password',None)
+    try:
+        if id!=None and password!=None:
+            obj=Librarian.objects.get(userid=id)
+            if obj.password == password:
+                data['success']=True
+                data['description']='login successfully'
+            else:
+                data['err']='password mismatch'
+        else:
+            data["err"]="missing fields ."
+    except Exception as e:
+        data["err"]=str(e)
+    
+    return Response(data)
+
+@api_view(['GET'])
+def books(request):
+    obj = Book.objects.all()
+    serializer = BookSerializers(obj, many=True)
+    return Response(serializer.data)
+
+@api_view(['POST'])
+def lendbooks(request):
+    id=request.data.get('userid')
+    obj = BookInstance.objects.filter(borrower=id,status = 'On loan')
+    serializer = BookInstanceSerializers(obj, many=True)
+    return Response(serializer.data)
+
+@api_view(['GET'])
+def issuebooks(request):
+    # id=request.data.get('userid')
+    obj = BookInstance.objects.filter(status = 'On loan')
+    serializer = BookInstanceSerializers(obj, many=True)
+    return Response(serializer.data)
+
+@api_view(['POST'])
+def history(request):
+    id=request.data.get('userid')
+    obj = BookInstance.objects.filter(borrower=id)
+    serializer = BookInstanceSerializers(obj, many=True)
+    return Response(serializer.data)
+    
+@api_view(['POST'])
+def updatebooks(request):
+    data = {"success":False, "data":[], "description":None, "err":None}
+
+    try:
+        data=request.data
+        id = request.data.get('bookid')
+        for i in range(1,len(data)):
+            Book.objects.filter(bookid=id).update(i= request.data.get(i))
+            data['success']=True
+            data["description"]="Book Update Successfully"
+        else:
+            data['err']="Book not Update"
+    except Exception as e:
+        data["err"]=str(e)
+    # print(data)
+    return Response(data)
+
+@api_view(['POST'])
+def createbooks(request):
+    data = {"success":False, "data":[], "description":None, "err":None}
+   
+    try:
+        ser=BookSerializers(data=request.data)
+        if ser.is_valid():
+            ser.save()
+            data['success']=True
+            data["description"]="Book Created Successfully"
+
+            # data["data"]=obj.email+" "+"User Created Successfully"
+        else:
+            data['err']=ser.errors
+    except Exception as e:
+        data["err"]=str(e)
+    # print(data)
+    return Response(data)
+
+       
+
+
+@api_view(['POST'])
+def book(request):
+    id=request.data.get('bookid')
+    obj = Book.objects.get(bookid=id)
+    serializer = BookSerializers(obj, many=False)
+    return Response(serializer.data)
+
+@api_view(['POST'])
+def borrowbook(request):
+    data = {"success":False, "data":[], "description":None, "err":None}
+
+    try:
+        id = request.data.get('bookid')
+        # print(id)
+        ser=BookInstanceSerializers(data=request.data)
+        
+        if ser.is_valid() and request.data.get('status')=='On loan':
+            # request.data.update(status = 'o')
+            # print(request.data.get('status'))
+            # serial = BookInstanceSerializers(data=request.data)
+            Book.objects.filter(bookid=id).update(status = 'On loan')
+            ser.save()
+            
+            data['success']=True
+            data["description"]="Book Rented Successfully"
+        else:
+            data['err']="Book not available"
+    except Exception as e:
+        data["err"]=str(e)
+    # print(data)
+    return Response(data)
+
+    
+
+
 
 # def index(request):
 #     """View function for home page of site."""

@@ -1,4 +1,9 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:http/http.dart';
+import 'package:istlibrary_admin/Screens/Home/home.dart';
+import 'package:localstorage/localstorage.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({Key? key}) : super(key: key);
@@ -8,6 +13,33 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
+  final url = 'http://127.0.0.1:8000/api/liblogin/';
+  TextEditingController userid = TextEditingController();
+  TextEditingController password = TextEditingController();
+  final LocalStorage storage = LocalStorage('lib_app');
+
+  login() async {
+    try {
+      final response = await post(Uri.parse(url),
+          body: {"userid": userid.text, "password": password.text});
+
+      if (response.statusCode == 200) {
+        if (jsonDecode(response.body)['success'] == true) {
+          Navigator.push(context,
+              MaterialPageRoute(builder: (context) => const Homepage()));
+          storage.setItem('userid', userid.text);
+        } else {
+          print(response.body);
+        }
+      } else {
+        print("Server Error");
+      }
+    } catch (e) {
+      print("error");
+      print(e);
+    }
+  }
+
   bool notPasswordvisible = true;
   @override
   Widget build(BuildContext context) {
@@ -77,15 +109,16 @@ class _LoginPageState extends State<LoginPage> {
                       const SizedBox(
                         height: 30,
                       ),
-                      const SizedBox(
+                      SizedBox(
                         width: 400,
                         child: TextField(
+                          controller: userid,
                           cursorColor: Colors.black,
-                          keyboardType: TextInputType.emailAddress,
-                          decoration: InputDecoration(
+                          keyboardType: TextInputType.text,
+                          decoration: const InputDecoration(
                             contentPadding: EdgeInsets.only(
                                 left: 15, bottom: 11, top: 11, right: 15),
-                            hintText: "User Id",
+                            hintText: "Faculty ID",
                             border: OutlineInputBorder(),
                           ),
                         ),
@@ -96,6 +129,7 @@ class _LoginPageState extends State<LoginPage> {
                       SizedBox(
                         width: 400,
                         child: TextField(
+                          controller: password,
                           cursorColor: Colors.black,
                           obscureText: notPasswordvisible,
                           keyboardType: TextInputType.emailAddress,
@@ -123,7 +157,9 @@ class _LoginPageState extends State<LoginPage> {
                         height: 50,
                       ),
                       ElevatedButton(
-                        onPressed: () {},
+                        onPressed: () {
+                          login();
+                        },
                         child: const Text('Submit'),
                         style: ElevatedButton.styleFrom(
                           primary: Colors.blue,
