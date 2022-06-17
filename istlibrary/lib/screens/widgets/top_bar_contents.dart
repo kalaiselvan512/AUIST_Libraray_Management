@@ -1,7 +1,11 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:http/http.dart';
 import 'package:istlibrary/screens/Book_Info/books.dart';
 import 'package:istlibrary/screens/History/history.dart';
 import 'package:istlibrary/screens/Lend_Books/lend.dart';
+import 'package:istlibrary/screens/Login/login.dart';
 import 'package:localstorage/localstorage.dart';
 
 class TopBarContents extends StatefulWidget {
@@ -26,11 +30,44 @@ class _TopBarContentsState extends State<TopBarContents> {
     false
   ];
   final LocalStorage storage = LocalStorage('lib_app');
+  var JsonData;
+  final url = 'http://127.0.0.1:8000/api/user/';
+
+  userapi() async {
+    try {
+      final response = await post(Uri.parse(url),
+          body: {"userid": storage.getItem("userid")});
+
+      var statusCode = response.statusCode;
+      JsonData = jsonDecode(response.body);
+      // print(JsonData);
+
+      setState(() {
+        JsonData;
+        // print(JsonData);
+      });
+      // print(statusCode);
+    } catch (e) {
+      print(e);
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+
+    userapi();
+  }
+
+  @override
+  void setState(VoidCallback fn) {
+    super.setState(fn);
+    JsonData;
+  }
 
   @override
   Widget build(BuildContext context) {
     var screenSize = MediaQuery.of(context).size;
-    String usr = storage.getItem('userid');
 
     return Container(
       color: Colors.white.withOpacity(widget.opacity),
@@ -47,7 +84,7 @@ class _TopBarContentsState extends State<TopBarContents> {
                     width: screenSize.width / 4,
                   ),
                   Text(
-                    usr,
+                    "${JsonData["username"]}",
                     style: const TextStyle(
                       color: Color(0xFF077bd7),
                       fontSize: 26,
@@ -63,12 +100,14 @@ class _TopBarContentsState extends State<TopBarContents> {
                         value ? _isHovering[0] = true : _isHovering[0] = false;
                       });
                     },
-                    onTap: () {},
+                    onTap: () {
+                      Navigator.pushNamed(context, '/home/bookinfo');
+                    },
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         Text(
-                          'Home',
+                          'Book Information',
                           style: TextStyle(
                               color: _isHovering[0]
                                   ? const Color(0xFF077bd7)
@@ -99,16 +138,13 @@ class _TopBarContentsState extends State<TopBarContents> {
                       });
                     },
                     onTap: () {
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => const BookInfo()));
+                      Navigator.pushNamed(context, '/home/borrowbooks');
                     },
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         Text(
-                          'Book Information',
+                          'Borrowed books',
                           style: TextStyle(
                               color: _isHovering[1]
                                   ? const Color(0xFF077bd7)
@@ -139,16 +175,13 @@ class _TopBarContentsState extends State<TopBarContents> {
                       });
                     },
                     onTap: () {
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => const LendedBooks()));
+                      Navigator.pushNamed(context, '/home/history');
                     },
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         Text(
-                          'Lended books',
+                          'History',
                           style: TextStyle(
                               color: _isHovering[2]
                                   ? const Color(0xFF077bd7)
@@ -179,16 +212,13 @@ class _TopBarContentsState extends State<TopBarContents> {
                       });
                     },
                     onTap: () {
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => const History()));
+                      Navigator.pushReplacementNamed(context, '/');
                     },
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         Text(
-                          'History',
+                          'Logout',
                           style: TextStyle(
                               color: _isHovering[3]
                                   ? const Color(0xFF077bd7)

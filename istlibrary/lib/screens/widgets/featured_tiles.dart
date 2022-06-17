@@ -1,7 +1,9 @@
+import 'package:istlibrary/screens/Home/domain.dart';
 import 'package:istlibrary/screens/widgets/responsive.dart';
 import 'package:flutter/material.dart';
+import 'package:localstorage/localstorage.dart';
 
-class FeaturedTiles extends StatelessWidget {
+class FeaturedTiles extends StatefulWidget {
   FeaturedTiles({
     Key? key,
     required this.screenSize,
@@ -9,6 +11,11 @@ class FeaturedTiles extends StatelessWidget {
 
   final Size screenSize;
 
+  @override
+  State<FeaturedTiles> createState() => _FeaturedTilesState();
+}
+
+class _FeaturedTilesState extends State<FeaturedTiles> {
   final List<String> assets = [
     'assets/images/blockchain.jpg',
     'assets/images/Data-Warehousing.jpg',
@@ -21,17 +28,19 @@ class FeaturedTiles extends StatelessWidget {
     'Machine Learning'
   ];
 
+  final LocalStorage storage = LocalStorage('lib_app');
+
   @override
   Widget build(BuildContext context) {
     return ResponsiveWidget.isSmallScreen(context)
         ? Padding(
-            padding: EdgeInsets.only(top: screenSize.height / 50),
+            padding: EdgeInsets.only(top: widget.screenSize.height / 50),
             child: SingleChildScrollView(
               scrollDirection: Axis.horizontal,
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: [
-                  SizedBox(width: screenSize.width / 15),
+                  SizedBox(width: widget.screenSize.width / 15),
                   ...Iterable<int>.generate(assets.length).map(
                     (int pageIndex) => Row(
                       children: [
@@ -39,32 +48,47 @@ class FeaturedTiles extends StatelessWidget {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             SizedBox(
-                              height: screenSize.width / 2.5,
-                              width: screenSize.width / 1.5,
-                              child: ClipRRect(
-                                borderRadius: BorderRadius.circular(5.0),
-                                child: Image.asset(
-                                  assets[pageIndex],
-                                  fit: BoxFit.cover,
+                              height: widget.screenSize.width / 2.5,
+                              width: widget.screenSize.width / 1.5,
+                              child: InkWell(
+                                onTap: () {
+                                  storage.setItem('domain', title[pageIndex]);
+                                  Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) =>
+                                              const Domainpage(
+                                                opacity: 0.0,
+                                              )));
+                                },
+                                child: ClipRRect(
+                                  borderRadius: BorderRadius.circular(5.0),
+                                  child: Image.asset(
+                                    assets[pageIndex],
+                                    fit: BoxFit.cover,
+                                  ),
                                 ),
                               ),
                             ),
                             Padding(
                               padding: EdgeInsets.only(
-                                top: screenSize.height / 70,
+                                top: widget.screenSize.height / 70,
                               ),
-                              child: Text(
-                                title[pageIndex],
-                                style: const TextStyle(
-                                  fontSize: 16,
-                                  fontFamily: 'Montserrat',
-                                  fontWeight: FontWeight.w500,
+                              child: GestureDetector(
+                                onTap: () {},
+                                child: Text(
+                                  title[pageIndex],
+                                  style: const TextStyle(
+                                    fontSize: 16,
+                                    fontFamily: 'Montserrat',
+                                    fontWeight: FontWeight.w500,
+                                  ),
                                 ),
                               ),
                             ),
                           ],
                         ),
-                        SizedBox(width: screenSize.width / 15),
+                        SizedBox(width: widget.screenSize.width / 15),
                       ],
                     ),
                   ),
@@ -74,9 +98,9 @@ class FeaturedTiles extends StatelessWidget {
           )
         : Padding(
             padding: EdgeInsets.only(
-              top: screenSize.height * 0.06,
-              left: screenSize.width / 15,
-              right: screenSize.width / 15,
+              top: widget.screenSize.height * 0.06,
+              left: widget.screenSize.width / 15,
+              right: widget.screenSize.width / 15,
             ),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -85,8 +109,8 @@ class FeaturedTiles extends StatelessWidget {
                   (int pageIndex) => Column(
                     children: [
                       SizedBox(
-                        height: screenSize.width / 6,
-                        width: screenSize.width / 3.8,
+                        height: widget.screenSize.width / 6,
+                        width: widget.screenSize.width / 3.8,
                         child: Container(
                           decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(20.0),
@@ -109,7 +133,7 @@ class FeaturedTiles extends StatelessWidget {
                       ),
                       Padding(
                         padding: EdgeInsets.only(
-                          top: screenSize.height / 70,
+                          top: widget.screenSize.height / 70,
                         ),
                         child: Text(
                           title[pageIndex],

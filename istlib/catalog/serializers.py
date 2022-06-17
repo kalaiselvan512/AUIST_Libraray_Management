@@ -20,3 +20,8 @@ class BookInstanceSerializers(serializers.ModelSerializer):
     class Meta:
         model=BookInstance
         fields='__all__'
+
+class RenewalSerializers(serializers.ModelSerializer):
+    class Meta:
+        model=Renewal
+        fields='__all__'

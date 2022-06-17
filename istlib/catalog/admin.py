@@ -1,16 +1,10 @@
 from django.contrib import admin
 
+
 # Register your models here.
 
-from .models import Book, BookInstance, LibUser, Librarian
+from .models import Book, BookInstance, LibUser, Librarian, Renewal
 
-"""Minimal registration of Models.
-admin.site.register(Book)
-admin.site.register(Author)
-admin.site.register(BookInstance)
-admin.site.register(Genre)
-admin.site.register(Language)
-"""
 
 class LibraianInline(admin.TabularInline):
     model: Librarian
@@ -26,8 +20,6 @@ class LibUserAdmin(admin.ModelAdmin):
 
 admin.site.register(LibUser, LibUserAdmin)
 
-# admin.site.register(Domain)
-
 
 
 class BooksInline(admin.TabularInline):
@@ -40,6 +32,10 @@ class BooksInline(admin.TabularInline):
 class BooksInstanceInline(admin.TabularInline):
     """Defines format of inline book instance insertion (used in BookAdmin)"""
     model = BookInstance
+
+class RenewalInline(admin.TabularInline):
+    """Defines format of inline book instance insertion (used in BookAdmin)"""
+    model = Renewal
 
 
 class BookAdmin(admin.ModelAdmin):
@@ -74,3 +70,26 @@ class BookInstanceAdmin(admin.ModelAdmin):
             'fields': ('status', 'date', 'borrower')
         }),
     )
+# admin.site.register(BookInstance, BookInstanceAdmin)
+
+@admin.register(Renewal)
+class RenewalAdmin(admin.ModelAdmin):
+    """Administration object for BookInstance models.
+    Defines:
+     - fields to be displayed in list view (list_display)
+     - filters that will be displayed in sidebar (list_filter)
+     - grouping of fields into sections (fieldsets)
+    """
+    list_display = ('title', 'status', 'borrower', 'date', 'bookid')
+    list_filter = ('status', 'date')
+
+    fieldsets = (
+        (None, {
+            'fields': ('title', 'bookid')
+        }),
+        ('Availability', {
+            'fields': ('status', 'date', 'borrower', 'return_date')
+        }),
+    )
+
+# admin.site.register(Renewal, RenewalAdmin)

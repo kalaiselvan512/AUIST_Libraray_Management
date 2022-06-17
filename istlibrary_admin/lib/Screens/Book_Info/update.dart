@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart';
+import 'package:istlibrary_admin/Screens/Book_Info/books.dart';
 import 'package:localstorage/localstorage.dart';
 import 'dart:convert';
 
@@ -14,23 +15,20 @@ class _UpdateState extends State<Update> {
   final LocalStorage storage = LocalStorage('lib_app');
 
   var JsonData;
-  var _title;
+  var Data;
+
   final url = 'http://127.0.0.1:8000/api/book/';
-  final url1 = 'http://127.0.0.1:8000/api/book/';
+  final url1 = 'http://127.0.0.1:8000/api/updatebooks/';
   bookapi() async {
     try {
       final response = await post(Uri.parse(url),
           body: {"bookid": storage.getItem('bookid')});
       var statusCode = response.statusCode;
       JsonData = jsonDecode(response.body);
-      // _title = JsonData['title'];
       // print(JsonData);
-      // print(_title);
-
       setState(() {
         JsonData;
       });
-      // print(statusCode);
     } catch (e) {
       return e;
     }
@@ -46,27 +44,31 @@ class _UpdateState extends State<Update> {
   void setState(VoidCallback fn) {
     super.setState(fn);
     JsonData;
-    _title;
+    // _title;
   }
 
   postdata() async {
     try {
       final response = await post(Uri.parse(url1), body: {
-        "bookid": storage.getItem('bookid').text,
+        "bookid": storage.getItem('bookid'),
         "title": title.text,
-        "secondary_title": secondary_title.text,
         "edition": edition.text,
         "author1": author1.text,
         "author2": author2.text,
         "author3": author3.text,
         "domain": domain.text,
+        "publisher": publisher.text,
         "status": status.text,
         "rack": rack.text,
-        "image": image.text,
       });
       // print(response);
       if (response.statusCode == 200) {
-        Data = response.body;
+        if (jsonDecode(response.body)['success'] == true) {
+          Navigator.of(context).push(MaterialPageRoute(
+              builder: (context) => BookInfo(
+                    opacity: 0.0,
+                  )));
+        }
       } else {
         print("Server Error");
       }
@@ -77,8 +79,6 @@ class _UpdateState extends State<Update> {
 
   late TextEditingController title =
       TextEditingController(text: JsonData['title']);
-  late TextEditingController secondary_title =
-      TextEditingController(text: JsonData['secondary_title']);
   late TextEditingController edition =
       TextEditingController(text: JsonData['edition']);
   late TextEditingController author1 =
@@ -93,8 +93,9 @@ class _UpdateState extends State<Update> {
       TextEditingController(text: JsonData['status']);
   late TextEditingController rack =
       TextEditingController(text: JsonData['rack']);
-  late TextEditingController image =
-      TextEditingController(text: JsonData['image']);
+  late TextEditingController publisher =
+      TextEditingController(text: JsonData['publisher']);
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -113,172 +114,227 @@ class _UpdateState extends State<Update> {
                 const SizedBox(
                   height: 10,
                 ),
-                SizedBox(
-                  width: 400,
-                  child: TextField(
-                    controller: title,
-                    cursorColor: Colors.black,
-                    keyboardType: TextInputType.text,
-                    decoration: const InputDecoration(
-                      contentPadding: EdgeInsets.only(
-                          left: 15, bottom: 11, top: 11, right: 15),
-                      hintText: "Title",
-                      border: OutlineInputBorder(),
+                Row(
+                  children: [
+                    Text('Title'),
+                    SizedBox(
+                      width: 20,
                     ),
-                  ),
+                    SizedBox(
+                      width: 400,
+                      child: TextField(
+                        controller: title,
+                        cursorColor: Colors.black,
+                        keyboardType: TextInputType.text,
+                        decoration: const InputDecoration(
+                          contentPadding: EdgeInsets.only(
+                              left: 15, bottom: 11, top: 11, right: 15),
+                          hintText: "Title",
+                          border: OutlineInputBorder(),
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
                 const SizedBox(
                   height: 20,
                 ),
-                SizedBox(
-                  width: 400,
-                  child: TextField(
-                    controller: secondary_title,
-                    cursorColor: Colors.black,
-                    keyboardType: TextInputType.text,
-                    decoration: const InputDecoration(
-                      contentPadding: EdgeInsets.only(
-                          left: 15, bottom: 11, top: 11, right: 15),
-                      hintText: "Secondary Title",
-                      border: OutlineInputBorder(),
+                Row(
+                  children: [
+                    Text('Edition'),
+                    SizedBox(
+                      width: 20,
                     ),
-                  ),
+                    SizedBox(
+                      width: 400,
+                      child: TextField(
+                        controller: edition,
+                        cursorColor: Colors.black,
+                        keyboardType: TextInputType.text,
+                        decoration: const InputDecoration(
+                          contentPadding: EdgeInsets.only(
+                              left: 15, bottom: 11, top: 11, right: 15),
+                          hintText: "Edition",
+                          border: OutlineInputBorder(),
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
                 const SizedBox(
                   height: 20,
                 ),
-                SizedBox(
-                  width: 400,
-                  child: TextField(
-                    controller: edition,
-                    cursorColor: Colors.black,
-                    keyboardType: TextInputType.text,
-                    decoration: const InputDecoration(
-                      contentPadding: EdgeInsets.only(
-                          left: 15, bottom: 11, top: 11, right: 15),
-                      hintText: "Edition",
-                      border: OutlineInputBorder(),
+                Row(
+                  children: [
+                    Text('Author 1'),
+                    SizedBox(
+                      width: 20,
                     ),
-                  ),
+                    SizedBox(
+                      width: 400,
+                      child: TextField(
+                        controller: author1,
+                        cursorColor: Colors.black,
+                        keyboardType: TextInputType.text,
+                        decoration: const InputDecoration(
+                          contentPadding: EdgeInsets.only(
+                              left: 15, bottom: 11, top: 11, right: 15),
+                          hintText: "Author 1",
+                          border: OutlineInputBorder(),
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
                 const SizedBox(
                   height: 20,
                 ),
-                SizedBox(
-                  width: 400,
-                  child: TextField(
-                    controller: author1,
-                    cursorColor: Colors.black,
-                    keyboardType: TextInputType.text,
-                    decoration: const InputDecoration(
-                      contentPadding: EdgeInsets.only(
-                          left: 15, bottom: 11, top: 11, right: 15),
-                      hintText: "Author 1",
-                      border: OutlineInputBorder(),
+                Row(
+                  children: [
+                    Text('Author 2'),
+                    SizedBox(
+                      width: 20,
                     ),
-                  ),
+                    SizedBox(
+                      width: 400,
+                      child: TextField(
+                        controller: author2,
+                        cursorColor: Colors.black,
+                        keyboardType: TextInputType.text,
+                        decoration: const InputDecoration(
+                          contentPadding: EdgeInsets.only(
+                              left: 15, bottom: 11, top: 11, right: 15),
+                          hintText: "Author 2",
+                          border: OutlineInputBorder(),
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
                 const SizedBox(
                   height: 20,
                 ),
-                SizedBox(
-                  width: 400,
-                  child: TextField(
-                    controller: author2,
-                    cursorColor: Colors.black,
-                    keyboardType: TextInputType.text,
-                    decoration: const InputDecoration(
-                      contentPadding: EdgeInsets.only(
-                          left: 15, bottom: 11, top: 11, right: 15),
-                      hintText: "Author 2",
-                      border: OutlineInputBorder(),
+                Row(
+                  children: [
+                    Text('Author 3'),
+                    SizedBox(
+                      width: 20,
                     ),
-                  ),
+                    SizedBox(
+                      width: 400,
+                      child: TextField(
+                        controller: author3,
+                        cursorColor: Colors.black,
+                        keyboardType: TextInputType.text,
+                        decoration: const InputDecoration(
+                          contentPadding: EdgeInsets.only(
+                              left: 15, bottom: 11, top: 11, right: 15),
+                          hintText: "Author 3",
+                          border: OutlineInputBorder(),
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
                 const SizedBox(
                   height: 20,
                 ),
-                SizedBox(
-                  width: 400,
-                  child: TextField(
-                    controller: author3,
-                    cursorColor: Colors.black,
-                    keyboardType: TextInputType.text,
-                    decoration: const InputDecoration(
-                      contentPadding: EdgeInsets.only(
-                          left: 15, bottom: 11, top: 11, right: 15),
-                      hintText: "Author 3",
-                      border: OutlineInputBorder(),
+                Row(
+                  children: [
+                    Text('Domain'),
+                    SizedBox(
+                      width: 20,
                     ),
-                  ),
+                    SizedBox(
+                      width: 400,
+                      child: TextField(
+                        controller: domain,
+                        cursorColor: Colors.black,
+                        keyboardType: TextInputType.text,
+                        decoration: const InputDecoration(
+                          contentPadding: EdgeInsets.only(
+                              left: 15, bottom: 11, top: 11, right: 15),
+                          hintText: "Domain",
+                          border: OutlineInputBorder(),
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
                 const SizedBox(
                   height: 20,
                 ),
-                SizedBox(
-                  width: 400,
-                  child: TextField(
-                    controller: domain,
-                    cursorColor: Colors.black,
-                    keyboardType: TextInputType.text,
-                    decoration: const InputDecoration(
-                      contentPadding: EdgeInsets.only(
-                          left: 15, bottom: 11, top: 11, right: 15),
-                      hintText: "Domain",
-                      border: OutlineInputBorder(),
+                Row(
+                  children: [
+                    Text('Status'),
+                    SizedBox(
+                      width: 20,
                     ),
-                  ),
+                    SizedBox(
+                      width: 400,
+                      child: TextField(
+                        controller: status,
+                        cursorColor: Colors.black,
+                        keyboardType: TextInputType.text,
+                        decoration: const InputDecoration(
+                          contentPadding: EdgeInsets.only(
+                              left: 15, bottom: 11, top: 11, right: 15),
+                          hintText: "Status",
+                          border: OutlineInputBorder(),
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
                 const SizedBox(
                   height: 20,
                 ),
-                SizedBox(
-                  width: 400,
-                  child: TextField(
-                    controller: status,
-                    cursorColor: Colors.black,
-                    keyboardType: TextInputType.text,
-                    decoration: const InputDecoration(
-                      contentPadding: EdgeInsets.only(
-                          left: 15, bottom: 11, top: 11, right: 15),
-                      hintText: "Status",
-                      border: OutlineInputBorder(),
+                Row(
+                  children: [
+                    Text('Rack'),
+                    SizedBox(
+                      width: 20,
                     ),
-                  ),
+                    SizedBox(
+                      width: 400,
+                      child: TextField(
+                        controller: rack,
+                        cursorColor: Colors.black,
+                        keyboardType: TextInputType.text,
+                        decoration: const InputDecoration(
+                          contentPadding: EdgeInsets.only(
+                              left: 15, bottom: 11, top: 11, right: 15),
+                          hintText: "Rack",
+                          border: OutlineInputBorder(),
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
                 const SizedBox(
                   height: 20,
                 ),
-                SizedBox(
-                  width: 400,
-                  child: TextField(
-                    controller: rack,
-                    cursorColor: Colors.black,
-                    keyboardType: TextInputType.text,
-                    decoration: const InputDecoration(
-                      contentPadding: EdgeInsets.only(
-                          left: 15, bottom: 11, top: 11, right: 15),
-                      hintText: "Rack",
-                      border: OutlineInputBorder(),
+                Row(
+                  children: [
+                    Text('Publisher'),
+                    SizedBox(
+                      width: 20,
                     ),
-                  ),
-                ),
-                const SizedBox(
-                  height: 20,
-                ),
-                SizedBox(
-                  width: 400,
-                  child: TextField(
-                    controller: image,
-                    cursorColor: Colors.black,
-                    keyboardType: TextInputType.text,
-                    decoration: const InputDecoration(
-                      contentPadding: EdgeInsets.only(
-                          left: 15, bottom: 11, top: 11, right: 15),
-                      hintText: "Image",
-                      border: OutlineInputBorder(),
+                    SizedBox(
+                      width: 400,
+                      child: TextField(
+                        controller: publisher,
+                        cursorColor: Colors.black,
+                        keyboardType: TextInputType.text,
+                        decoration: const InputDecoration(
+                          contentPadding: EdgeInsets.only(
+                              left: 15, bottom: 11, top: 11, right: 15),
+                          hintText: "Publisher",
+                          border: OutlineInputBorder(),
+                        ),
+                      ),
                     ),
-                  ),
+                  ],
                 ),
                 const SizedBox(
                   height: 10,
@@ -288,7 +344,16 @@ class _UpdateState extends State<Update> {
             const SizedBox(
               width: 400,
             ),
-            ElevatedButton(onPressed: () {}, child: const Text('Change'))
+            SizedBox(
+              width: 100,
+              height: 50,
+              child: ElevatedButton(
+                onPressed: () {
+                  postdata();
+                },
+                child: Text('Update'),
+              ),
+            ),
           ],
         ),
       ),

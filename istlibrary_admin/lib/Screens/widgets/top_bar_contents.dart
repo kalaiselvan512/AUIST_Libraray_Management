@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:istlibrary_admin/Screens/Book_Info/create.dart';
+import 'package:istlibrary_admin/Screens/Issue_Books/renewal_books.dart';
 import 'package:istlibrary_admin/Screens/Issue_Books/issue_books.dart';
+import 'package:istlibrary_admin/Screens/Login/login.dart';
 import 'package:istlibrary_admin/screens/Book_Info/books.dart';
 import 'package:localstorage/localstorage.dart';
 
@@ -30,7 +32,7 @@ class _TopBarContentsState extends State<TopBarContents> {
   @override
   Widget build(BuildContext context) {
     var screenSize = MediaQuery.of(context).size;
-    String usr = storage.getItem('userid');
+    // String usr = storage.getItem('userid');
 
     return Container(
       color: Colors.white.withOpacity(widget.opacity),
@@ -44,11 +46,11 @@ class _TopBarContentsState extends State<TopBarContents> {
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: [
                   SizedBox(
-                    width: screenSize.width / 4,
+                    width: screenSize.width / 6,
                   ),
-                  Text(
-                    usr,
-                    style: const TextStyle(
+                  const Text(
+                    ('Librarian'),
+                    style: TextStyle(
                       color: Color(0xFF077bd7),
                       fontSize: 26,
                       fontFamily: 'Raleway',
@@ -63,12 +65,14 @@ class _TopBarContentsState extends State<TopBarContents> {
                         value ? _isHovering[0] = true : _isHovering[0] = false;
                       });
                     },
-                    onTap: () {},
+                    onTap: () {
+                      Navigator.pushNamed(context, '/home/bookinfo');
+                    },
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         Text(
-                          'Home',
+                          'Book Information',
                           style: TextStyle(
                               color: _isHovering[0]
                                   ? const Color(0xFF077bd7)
@@ -99,16 +103,13 @@ class _TopBarContentsState extends State<TopBarContents> {
                       });
                     },
                     onTap: () {
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => const BookInfo()));
+                      Navigator.pushNamed(context, '/home/renewalbooks');
                     },
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         Text(
-                          'Book Information',
+                          'Renew Books',
                           style: TextStyle(
                               color: _isHovering[1]
                                   ? const Color(0xFF077bd7)
@@ -138,12 +139,14 @@ class _TopBarContentsState extends State<TopBarContents> {
                         value ? _isHovering[2] = true : _isHovering[2] = false;
                       });
                     },
-                    onTap: () {},
+                    onTap: () {
+                      Navigator.pushNamed(context, '/home/issuebooks');
+                    },
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         Text(
-                          'Renewal books',
+                          'Issue Books',
                           style: TextStyle(
                               color: _isHovering[2]
                                   ? const Color(0xFF077bd7)
@@ -174,16 +177,13 @@ class _TopBarContentsState extends State<TopBarContents> {
                       });
                     },
                     onTap: () {
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => const IssueBooks()));
+                      Navigator.pushNamed(context, '/home/createbooks');
                     },
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         Text(
-                          'Issue Books',
+                          'Create Books',
                           style: TextStyle(
                               color: _isHovering[3]
                                   ? const Color(0xFF077bd7)
@@ -214,16 +214,13 @@ class _TopBarContentsState extends State<TopBarContents> {
                       });
                     },
                     onTap: () {
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => const CreateBooks()));
+                      Navigator.pushReplacementNamed(context, '/');
                     },
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         Text(
-                          'Create Books',
+                          'Logout',
                           style: TextStyle(
                               color: _isHovering[4]
                                   ? const Color(0xFF077bd7)

@@ -29,9 +29,12 @@ class _LoginpageState extends State<Loginpage> {
 
       if (response.statusCode == 200) {
         if (jsonDecode(response.body)['success'] == true) {
-          Navigator.push(context,
-              MaterialPageRoute(builder: (context) => const Homepage()));
           storage.setItem('userid', userid.text);
+
+          Navigator.pushReplacementNamed(context, 'home/');
+
+          // Navigator.push(context,
+          //     MaterialPageRoute(builder: (context) => const Homepage()));
         } else {
           print(response.body);
         }
@@ -43,6 +46,8 @@ class _LoginpageState extends State<Loginpage> {
       print(e);
     }
   }
+
+  bool notPasswordvisible = true;
 
   @override
   Widget build(BuildContext context) {
@@ -134,12 +139,24 @@ class _LoginpageState extends State<Loginpage> {
                         child: TextField(
                           controller: password,
                           cursorColor: Colors.black,
-                          obscureText: true,
+                          obscureText: notPasswordvisible,
                           keyboardType: TextInputType.emailAddress,
-                          decoration: const InputDecoration(
-                            contentPadding: EdgeInsets.only(
+                          decoration: InputDecoration(
+                            contentPadding: const EdgeInsets.only(
                                 left: 15, bottom: 11, top: 11, right: 15),
                             hintText: "Password",
+                            suffixIcon: IconButton(
+                                onPressed: () {
+                                  setState(() {
+                                    notPasswordvisible = !notPasswordvisible;
+                                  });
+                                },
+                                icon: Icon(
+                                  !notPasswordvisible
+                                      ? Icons.visibility
+                                      : Icons.visibility_off,
+                                  color: Theme.of(context).primaryColorDark,
+                                )),
                             border: OutlineInputBorder(),
                           ),
                         ),
@@ -188,24 +205,24 @@ class _LoginpageState extends State<Loginpage> {
                           const SizedBox(
                             width: 200,
                           ),
-                          RichText(
-                            text: TextSpan(children: [
-                              TextSpan(
-                                  text: "Forget Password",
-                                  style: const TextStyle(
-                                      color: Colors.blue,
-                                      fontWeight: FontWeight.bold,
-                                      decoration: TextDecoration.underline),
-                                  recognizer: TapGestureRecognizer()
-                                    ..onTap = () {
-                                      // Navigator.push(
-                                      //     context,
-                                      //     MaterialPageRoute(
-                                      //         builder: (context) =>
-                                      //             const SignUppage()));
-                                    })
-                            ]),
-                          ),
+                          // RichText(
+                          //   text: TextSpan(children: [
+                          //     TextSpan(
+                          //         text: "Forget Password",
+                          //         style: const TextStyle(
+                          //             color: Colors.blue,
+                          //             fontWeight: FontWeight.bold,
+                          //             decoration: TextDecoration.underline),
+                          //         recognizer: TapGestureRecognizer()
+                          //           ..onTap = () {
+                          //             // Navigator.push(
+                          //             //     context,
+                          //             //     MaterialPageRoute(
+                          //             //         builder: (context) =>
+                          //             //             const SignUppage()));
+                          //           })
+                          //   ]),
+                          // ),
                         ],
                       )
                     ],

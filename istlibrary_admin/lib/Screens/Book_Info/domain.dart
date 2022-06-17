@@ -1,21 +1,22 @@
 import 'dart:convert';
 
-import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/src/foundation/key.dart';
+import 'package:flutter/src/widgets/framework.dart';
 import 'package:http/http.dart';
 import 'package:intl/intl.dart';
-
+import 'package:istlibrary_admin/Screens/Book_Info/update.dart';
 import 'package:localstorage/localstorage.dart';
 
-class LendedBooks extends StatefulWidget {
+class Domainpage extends StatefulWidget {
   final double opacity;
-  const LendedBooks({Key? key, required this.opacity}) : super(key: key);
+  const Domainpage({Key? key, required this.opacity}) : super(key: key);
 
   @override
-  State<LendedBooks> createState() => _LendedBooksState();
+  State<Domainpage> createState() => _DomainpageState();
 }
 
-class _LendedBooksState extends State<LendedBooks> {
+class _DomainpageState extends State<Domainpage> {
   final ScrollController _scrollController = ScrollController();
   double _scrollPosition = 0;
   double _opacity = 0;
@@ -26,26 +27,92 @@ class _LendedBooksState extends State<LendedBooks> {
     });
   }
 
+  _refresh() {
+    if (search == null) {
+      return domainapi();
+    } else {
+      return searchapi();
+    }
+  }
+
   final LocalStorage storage = LocalStorage('lib_app');
   var JsonData;
   var Data;
   var bookid;
   var title;
-  var return_date;
-  var borrowed_date;
   var status;
-  final url = 'http://127.0.0.1:8000/api/lendbooks/';
-  final url1 = 'http://127.0.0.1:8000/api/renewal/';
-
-  renewbook() async {
+  final url = 'http://127.0.0.1:8000/api/domainbooks/';
+  final url1 = 'http://127.0.0.1:8000/api/domainbooksearch/';
+  final url2 = 'http://127.0.0.1:8000/api/borrowbook/';
+  final url3 = 'http://127.0.0.1:8000/api/deletebook/';
+  deletebook() async {
     try {
-      final response = await post(Uri.parse(url1), body: {
+      final response = await post(Uri.parse(url3),
+          body: {"bookid": storage.getItem('bookid')});
+      if (response.statusCode == 200) {
+        Data = response.body;
+      } else {
+        print("Server Error");
+      }
+    } catch (e) {
+      print(e);
+    }
+  }
+
+  searchapi() async {
+    try {
+      final response = await post(Uri.parse(url1),
+          body: {"domain": storage.getItem("domain"), "title": search.text});
+
+      var statusCode = response.statusCode;
+      JsonData = jsonDecode(response.body);
+      // for (var i in JsonData) {
+      //   print(i);
+      // }
+
+      setState(() {
+        JsonData;
+        // print(JsonData);
+      });
+      // print(statusCode);
+    } catch (e) {
+      print(e);
+    }
+  }
+
+  domainapi() async {
+    try {
+      final response = await post(Uri.parse(url),
+          body: {"domain": storage.getItem("domain")});
+
+      var statusCode = response.statusCode;
+      JsonData = jsonDecode(response.body);
+      // for (var i in JsonData) {
+      //   print(i);
+      // }
+
+      setState(() {
+        JsonData;
+        // print(JsonData);
+      });
+      // print(statusCode);
+    } catch (e) {
+      print(e);
+    }
+  }
+
+  borrowbook() async {
+    var now = DateTime.now();
+    var formatter = DateFormat('yyyy-MM-dd');
+    String formattedDate = formatter.format(now);
+    print(formattedDate);
+    try {
+      final response = await post(Uri.parse(url2), body: {
         "bookid": bookid,
         "title": title,
-        "date": borrowed_date,
+        "date": formattedDate,
         "borrower": storage.getItem("userid"),
-        "status": status,
-        "return_date": return_date,
+        "status": status == 'Available' ? 'Not Available' : 'Available',
       });
       if (response.statusCode == 200) {
         Data = jsonDecode(response.body);
@@ -57,33 +124,23 @@ class _LendedBooksState extends State<LendedBooks> {
     }
   }
 
-  lendbooksapi() async {
-    try {
-      final response = await post(Uri.parse(url),
-          body: {"userid": storage.getItem('userid')});
-      var statusCode = response.statusCode;
-      JsonData = jsonDecode(response.body);
-
-      setState(() {
-        JsonData;
-      });
-      // print(statusCode);
-    } catch (e) {
-      return e;
-    }
-  }
-
   @override
   void initState() {
     super.initState();
-    lendbooksapi();
+    _scrollController.addListener(_scrollListener);
+    search.addListener(_refresh);
+    domainapi();
   }
 
   @override
   void setState(VoidCallback fn) {
+    // TODO: implement setState
     super.setState(fn);
+    // domainapi();
     JsonData;
   }
+
+  TextEditingController search = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -91,6 +148,7 @@ class _LendedBooksState extends State<LendedBooks> {
     _opacity = _scrollPosition < screenSize.height * 0.40
         ? _scrollPosition / (screenSize.height * 0.40)
         : 1;
+    var _text = '';
     return Scaffold(
       appBar: PreferredSize(
         preferredSize: Size(screenSize.width, 1000),
@@ -105,9 +163,6 @@ class _LendedBooksState extends State<LendedBooks> {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: [
-                      SizedBox(
-                        width: 50,
-                      ),
                       const Text(
                         'Bookid',
                         style: TextStyle(
@@ -117,7 +172,7 @@ class _LendedBooksState extends State<LendedBooks> {
                           fontWeight: FontWeight.bold,
                         ),
                       ),
-                      SizedBox(width: 200),
+                      SizedBox(width: 150),
                       InkWell(
                         child: Column(
                           mainAxisSize: MainAxisSize.min,
@@ -135,13 +190,13 @@ class _LendedBooksState extends State<LendedBooks> {
                           ],
                         ),
                       ),
-                      SizedBox(width: 290),
+                      SizedBox(width: 250),
                       InkWell(
                         child: Column(
                           mainAxisSize: MainAxisSize.min,
                           children: const [
                             Text(
-                              'Borrowed Date',
+                              'Author',
                               style: TextStyle(
                                 fontWeight: FontWeight.bold,
                                 fontSize: 16,
@@ -153,7 +208,43 @@ class _LendedBooksState extends State<LendedBooks> {
                           ],
                         ),
                       ),
-                      SizedBox(width: 160),
+                      SizedBox(width: 250),
+                      InkWell(
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: const [
+                            Text(
+                              'Domain',
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 16,
+                                fontFamily: 'Raleway',
+                                color: Color(0xFF077bd7),
+                              ),
+                            ),
+                            SizedBox(height: 5),
+                          ],
+                        ),
+                      ),
+                      SizedBox(width: 130),
+                      InkWell(
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: const [
+                            Text(
+                              'Rack',
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 16,
+                                fontFamily: 'Raleway',
+                                color: Color(0xFF077bd7),
+                              ),
+                            ),
+                            SizedBox(height: 5),
+                          ],
+                        ),
+                      ),
+                      SizedBox(width: 85),
                       InkWell(
                         child: Column(
                           mainAxisSize: MainAxisSize.min,
@@ -171,48 +262,37 @@ class _LendedBooksState extends State<LendedBooks> {
                           ],
                         ),
                       ),
-                      SizedBox(width: 210),
-
-                      InkWell(
-                        child: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          children: const [
-                            Text(
-                              'Return Date',
-                              style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                fontSize: 16,
-                                fontFamily: 'Raleway',
-                                color: Color(0xFF077bd7),
-                              ),
-                            ),
-                            SizedBox(height: 5),
-                          ],
+                      SizedBox(
+                        width: 50,
+                      ),
+                      SizedBox(
+                        width: 250,
+                        child: TextFormField(
+                          controller: search,
+                          onChanged: (value) {
+                            // ignore: unnecessary_null_comparison
+                            if (search == null) {
+                              setState(
+                                () => domainapi(),
+                              );
+                            }
+                          },
+                          cursorColor: Colors.black,
+                          keyboardType: TextInputType.text,
+                          decoration: const InputDecoration(
+                            contentPadding: EdgeInsets.only(
+                                left: 15, bottom: 11, top: 11, right: 15),
+                            hintText: "Book_Title",
+                            border: OutlineInputBorder(),
+                          ),
                         ),
                       ),
                       // SizedBox(
-                      //   width: 50,
-                      // ),
-                      // SizedBox(
-                      //   width: 250,
-                      //   child: TextFormField(
-                      //     controller: search,
-                      //     onChanged: (value) {
-                      //       // ignore: unnecessary_null_comparison
-                      //       if (search == null) {
-                      //         setState(
-                      //           () => booksapi(),
-                      //         );
-                      //       }
+                      //   child: IconButton(
+                      //     onPressed: () {
+                      //       searchapi();
                       //     },
-                      //     cursorColor: Colors.black,
-                      //     keyboardType: TextInputType.text,
-                      //     decoration: const InputDecoration(
-                      //       contentPadding: EdgeInsets.only(
-                      //           left: 15, bottom: 11, top: 11, right: 15),
-                      //       hintText: "Book_Title",
-                      //       border: OutlineInputBorder(),
-                      //     ),
+                      //     icon: const Icon(Icons.search),
                       //   ),
                       // ),
                     ],
@@ -230,7 +310,7 @@ class _LendedBooksState extends State<LendedBooks> {
           else if (JsonData != null)
             for (var i in JsonData.toList())
               Container(
-                height: 150,
+                height: 100,
                 width: MediaQuery.of(context).size.width,
                 decoration: BoxDecoration(
                   border: Border.all(
@@ -240,44 +320,53 @@ class _LendedBooksState extends State<LendedBooks> {
                 child: Row(
                   children: [
                     SizedBox(
-                      width: 50,
-                    ),
-                    SizedBox(
                       width: 80,
                       child: Center(
-                        child: Text("${i['bookid']}"),
+                        child: Text('${i['bookid']}'),
                       ),
                     ),
                     SizedBox(
-                      width: 30,
-                    ),
-                    SizedBox(
-                      width: 400,
+                      width: 300,
                       child: Center(
                         child: Text('${i['title']}'),
                       ),
                     ),
                     SizedBox(
-                      width: 250,
+                      width: 300,
                       child: Center(
-                        child: Text('${i['date']}'),
+                        child: Text('${i['author1']}'),
                       ),
                     ),
                     SizedBox(
-                      width: 250,
+                      width: 300,
+                      child: Center(
+                        child: Text('${i['domain']}'),
+                      ),
+                    ),
+                    SizedBox(
+                      width: 50,
+                      child: Center(
+                        child: Text('${i['rack']}'),
+                      ),
+                    ),
+                    SizedBox(
+                      width: 200,
                       child: Center(
                         child: Text('${i['status']}'),
                       ),
                     ),
                     const SizedBox(
-                      width: 50,
+                      width: 30,
                     ),
                     SizedBox(
-                      width: 200,
-                      child: Center(
-                        child: Text(
-                            '${DateFormat("yyyy-MM-dd").format(DateTime.parse(i['date']).add(Duration(days: 90)))}'),
-                      ),
+                      width: 120,
+                      height: 50,
+                      child: ElevatedButton(
+                          onPressed: () {
+                            storage.setItem('bookid', i['bookid']);
+                            deletebook();
+                          },
+                          child: Text('Delete')),
                     ),
                     const SizedBox(
                       width: 10,
@@ -287,41 +376,11 @@ class _LendedBooksState extends State<LendedBooks> {
                       height: 50,
                       child: ElevatedButton(
                           onPressed: () {
-                            return_date = DateFormat("yyyy-MM-dd").format(
-                                DateTime.parse(i['date'])
-                                    .add(Duration(days: 90)));
-                            bookid = i['bookid'];
-                            title = i['title'];
-                            borrowed_date = i['date'];
-                            status = i['status'];
-                            // print(storage.getItem('userid'));
-                            // print(bookid);
-                            // print(title);
-                            // print(borrowed_date);
-                            // print(return_date);
-                            // print(status);
-                            renewbook();
-                            showDialog<String>(
-                              context: context,
-                              builder: (BuildContext context) => AlertDialog(
-                                title: const Text('Message'),
-                                content:
-                                    Text("Renewal Request Sent Successfully"),
-                                actions: <Widget>[
-                                  TextButton(
-                                    onPressed: () => Navigator.pop(context),
-                                    child: const Text('OK'),
-                                  ),
-                                ],
-                              ),
-                            );
-
-                            // ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                            //     content: Text(Data['err'] != null
-                            //         ? "${Data['err']}"
-                            //         : "${Data['description']}")));
+                            storage.setItem('bookid', i['bookid']);
+                            Navigator.of(context).push(MaterialPageRoute(
+                                builder: (context) => Update()));
                           },
-                          child: Text('Renew')),
+                          child: Text('Update')),
                     )
                   ],
                 ),

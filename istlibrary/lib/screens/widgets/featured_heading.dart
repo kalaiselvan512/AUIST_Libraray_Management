@@ -29,12 +29,12 @@ class FeaturedHeading extends StatelessWidget {
                 fontWeight: FontWeight.bold,
                 color: Color(0xFF077bd7)),
           ),
-          Expanded(
-            child: Text(
-              'Click your Domain',
-              textAlign: TextAlign.end,
-            ),
-          ),
+          // Expanded(
+          //   child: Text(
+          //     'Click your Domain',
+          //     textAlign: TextAlign.end,
+          //   ),
+          // ),
         ],
       ),
     );

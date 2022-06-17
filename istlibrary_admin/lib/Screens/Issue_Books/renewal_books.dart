@@ -7,15 +7,15 @@ import 'package:intl/intl.dart';
 
 import 'package:localstorage/localstorage.dart';
 
-class LendedBooks extends StatefulWidget {
+class RenewalBooks extends StatefulWidget {
   final double opacity;
-  const LendedBooks({Key? key, required this.opacity}) : super(key: key);
+  const RenewalBooks({Key? key, required this.opacity}) : super(key: key);
 
   @override
-  State<LendedBooks> createState() => _LendedBooksState();
+  State<RenewalBooks> createState() => _RenewalBooksState();
 }
 
-class _LendedBooksState extends State<LendedBooks> {
+class _RenewalBooksState extends State<RenewalBooks> {
   final ScrollController _scrollController = ScrollController();
   double _scrollPosition = 0;
   double _opacity = 0;
@@ -30,22 +30,20 @@ class _LendedBooksState extends State<LendedBooks> {
   var JsonData;
   var Data;
   var bookid;
-  var title;
-  var return_date;
-  var borrowed_date;
-  var status;
-  final url = 'http://127.0.0.1:8000/api/lendbooks/';
-  final url1 = 'http://127.0.0.1:8000/api/renewal/';
+  var borrower;
+  final url = 'http://127.0.0.1:8000/api/adminrenewalbooks/';
+  final url1 = 'http://127.0.0.1:8000/api/renewbook/';
 
   renewbook() async {
+    var now = DateTime.now();
+    var formatter = DateFormat('yyyy-MM-dd');
+    String formattedDate = formatter.format(now);
+    // print(formattedDate);
     try {
       final response = await post(Uri.parse(url1), body: {
         "bookid": bookid,
-        "title": title,
-        "date": borrowed_date,
-        "borrower": storage.getItem("userid"),
-        "status": status,
-        "return_date": return_date,
+        "date": formattedDate,
+        "borrower": borrower,
       });
       if (response.statusCode == 200) {
         Data = jsonDecode(response.body);
@@ -57,26 +55,31 @@ class _LendedBooksState extends State<LendedBooks> {
     }
   }
 
-  lendbooksapi() async {
+  renewapi() async {
     try {
-      final response = await post(Uri.parse(url),
-          body: {"userid": storage.getItem('userid')});
+      final response = await get(
+        Uri.parse(url),
+      );
       var statusCode = response.statusCode;
       JsonData = jsonDecode(response.body);
+      // for (var i in JsonData) {
+      //   print(i);
+      // }
 
       setState(() {
         JsonData;
+        // print(JsonData);
       });
       // print(statusCode);
     } catch (e) {
-      return e;
+      print(e);
     }
   }
 
   @override
   void initState() {
     super.initState();
-    lendbooksapi();
+    renewapi();
   }
 
   @override
@@ -105,9 +108,6 @@ class _LendedBooksState extends State<LendedBooks> {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: [
-                      SizedBox(
-                        width: 50,
-                      ),
                       const Text(
                         'Bookid',
                         style: TextStyle(
@@ -135,7 +135,7 @@ class _LendedBooksState extends State<LendedBooks> {
                           ],
                         ),
                       ),
-                      SizedBox(width: 290),
+                      SizedBox(width: 180),
                       InkWell(
                         child: Column(
                           mainAxisSize: MainAxisSize.min,
@@ -153,7 +153,27 @@ class _LendedBooksState extends State<LendedBooks> {
                           ],
                         ),
                       ),
-                      SizedBox(width: 160),
+                      SizedBox(
+                        width: 110,
+                      ),
+                      InkWell(
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: const [
+                            Text(
+                              'Borrower',
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 16,
+                                fontFamily: 'Raleway',
+                                color: Color(0xFF077bd7),
+                              ),
+                            ),
+                            SizedBox(height: 5),
+                          ],
+                        ),
+                      ),
+                      SizedBox(width: 145),
                       InkWell(
                         child: Column(
                           mainAxisSize: MainAxisSize.min,
@@ -171,7 +191,7 @@ class _LendedBooksState extends State<LendedBooks> {
                           ],
                         ),
                       ),
-                      SizedBox(width: 210),
+                      SizedBox(width: 130),
 
                       InkWell(
                         child: Column(
@@ -240,86 +260,63 @@ class _LendedBooksState extends State<LendedBooks> {
                 child: Row(
                   children: [
                     SizedBox(
-                      width: 50,
-                    ),
-                    SizedBox(
                       width: 80,
                       child: Center(
                         child: Text("${i['bookid']}"),
                       ),
                     ),
                     SizedBox(
-                      width: 30,
+                      width: 50,
                     ),
                     SizedBox(
-                      width: 400,
+                      width: 300,
                       child: Center(
                         child: Text('${i['title']}'),
                       ),
                     ),
                     SizedBox(
-                      width: 250,
+                      width: 200,
                       child: Center(
                         child: Text('${i['date']}'),
                       ),
                     ),
                     SizedBox(
-                      width: 250,
+                      width: 200,
                       child: Center(
-                        child: Text('${i['status']}'),
+                        child: Text('${i['borrower']}'),
                       ),
-                    ),
-                    const SizedBox(
-                      width: 50,
                     ),
                     SizedBox(
                       width: 200,
                       child: Center(
-                        child: Text(
-                            '${DateFormat("yyyy-MM-dd").format(DateTime.parse(i['date']).add(Duration(days: 90)))}'),
+                        child: Text('${i['status']}'),
                       ),
                     ),
-                    const SizedBox(
-                      width: 10,
+                    SizedBox(
+                      width: 200,
+                      child: Center(
+                        child: Text('${i['return_date']}'),
+                      ),
                     ),
                     SizedBox(
                       width: 120,
                       height: 50,
                       child: ElevatedButton(
                           onPressed: () {
-                            return_date = DateFormat("yyyy-MM-dd").format(
-                                DateTime.parse(i['date'])
-                                    .add(Duration(days: 90)));
                             bookid = i['bookid'];
-                            title = i['title'];
-                            borrowed_date = i['date'];
-                            status = i['status'];
-                            // print(storage.getItem('userid'));
-                            // print(bookid);
-                            // print(title);
-                            // print(borrowed_date);
-                            // print(return_date);
-                            // print(status);
-                            renewbook();
-                            showDialog<String>(
-                              context: context,
-                              builder: (BuildContext context) => AlertDialog(
-                                title: const Text('Message'),
-                                content:
-                                    Text("Renewal Request Sent Successfully"),
-                                actions: <Widget>[
-                                  TextButton(
-                                    onPressed: () => Navigator.pop(context),
-                                    child: const Text('OK'),
-                                  ),
-                                ],
-                              ),
-                            );
+                            borrower = i['borrower'];
 
-                            // ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                            //     content: Text(Data['err'] != null
-                            //         ? "${Data['err']}"
-                            //         : "${Data['description']}")));
+                            renewbook();
+                            setState(() {
+                              renewapi();
+                            });
+                            // Navigator.of(context).push(MaterialPageRoute(
+                            //     builder: (context) => const RenewalBooks()));
+
+                            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                                content: Text(Data['err'] != null
+                                    ? "${Data['err']}"
+                                    : "${Data['description']}")));
                           },
                           child: Text('Renew')),
                     )

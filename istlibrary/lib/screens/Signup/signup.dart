@@ -19,7 +19,7 @@ class _SignUppageState extends State<SignUppage> {
     try {
       final response = await post(Uri.parse(url), body: {
         "userid": userid.text,
-        "username": name.text,
+        "username": dropdownValue + name.text,
         "email": email.text,
         "designation": designation.text,
         "contact": contact.text,
@@ -35,6 +35,8 @@ class _SignUppageState extends State<SignUppage> {
       print(e);
     }
   }
+
+  String dropdownValue = 'Mr ';
 
   TextEditingController userid = TextEditingController();
   TextEditingController name = TextEditingController();
@@ -73,14 +75,17 @@ class _SignUppageState extends State<SignUppage> {
           ),
           child: SizedBox(
             // color: Colors.blue[200],
-            width: 900,
-            height: 500,
+            width: 1500,
+            height: 600,
             child: Row(
               children: [
+                // SizedBox(
+                //   width: 200,
+                // ),
                 Flexible(
                   child: Image.asset(
                     'assets/images/signuppageimage.png',
-                    width: 400,
+                    width: 600,
                     height: 500,
                   ),
                 ),
@@ -94,13 +99,13 @@ class _SignUppageState extends State<SignUppage> {
                   ),
                 ),
                 Flexible(
-                  child: SingleChildScrollView(
-                    child: Column(
-                      children: [
-                        const SizedBox(
-                          height: 30,
-                        ),
-                        const Padding(
+                  child: Column(
+                    children: [
+                      const SizedBox(
+                        height: 30,
+                      ),
+                      const Center(
+                        child: Padding(
                           padding: EdgeInsets.all(8.0),
                           child: Text(
                             'SignUp',
@@ -112,188 +117,259 @@ class _SignUppageState extends State<SignUppage> {
                             ),
                           ),
                         ),
-                        const SizedBox(
-                          height: 30,
-                        ),
-                        SizedBox(
-                          width: 400,
-                          child: TextField(
-                            controller: userid,
-                            cursorColor: Colors.black,
-                            keyboardType: TextInputType.text,
-                            decoration: const InputDecoration(
-                              contentPadding: EdgeInsets.only(
-                                  left: 15, bottom: 11, top: 11, right: 15),
-                              hintText: "Faculty ID",
-                              border: OutlineInputBorder(),
-                            ),
-                          ),
-                        ),
-                        const SizedBox(
-                          height: 20,
-                        ),
-                        SizedBox(
-                          width: 400,
-                          child: TextField(
-                            controller: name,
-                            cursorColor: Colors.black,
-                            keyboardType: TextInputType.text,
-                            decoration: const InputDecoration(
-                              contentPadding: EdgeInsets.only(
-                                  left: 15, bottom: 11, top: 11, right: 15),
-                              hintText: "Name",
-                              border: OutlineInputBorder(),
-                            ),
-                          ),
-                        ),
-                        const SizedBox(
-                          height: 20,
-                        ),
-                        SizedBox(
-                          width: 400,
-                          child: TextField(
-                            controller: designation,
-                            cursorColor: Colors.black,
-                            keyboardType: TextInputType.text,
-                            decoration: const InputDecoration(
-                              contentPadding: EdgeInsets.only(
-                                  left: 15, bottom: 11, top: 11, right: 15),
-                              hintText: "Designation",
-                              border: OutlineInputBorder(),
-                            ),
-                          ),
-                        ),
-                        const SizedBox(
-                          height: 20,
-                        ),
-                        SizedBox(
-                          width: 400,
-                          child: TextField(
-                            controller: email,
-                            cursorColor: Colors.black,
-                            keyboardType: TextInputType.emailAddress,
-                            decoration: const InputDecoration(
-                              contentPadding: EdgeInsets.only(
-                                  left: 15, bottom: 11, top: 11, right: 15),
-                              hintText: "Email",
-                              border: OutlineInputBorder(),
-                            ),
-                          ),
-                        ),
-                        const SizedBox(
-                          height: 20,
-                        ),
-                        SizedBox(
-                          width: 400,
-                          child: TextField(
-                            controller: contact,
-                            cursorColor: Colors.black,
-                            keyboardType: TextInputType.number,
-                            decoration: const InputDecoration(
-                              contentPadding: EdgeInsets.only(
-                                  left: 15, bottom: 11, top: 11, right: 15),
-                              hintText: "Contact",
-                              border: OutlineInputBorder(),
-                            ),
-                          ),
-                        ),
-                        const SizedBox(
-                          height: 20,
-                        ),
-                        SizedBox(
-                          width: 400,
-                          child: TextField(
-                            controller: password,
-                            cursorColor: Colors.black,
-                            obscureText: true,
-                            keyboardType: TextInputType.text,
-                            decoration: const InputDecoration(
-                              contentPadding: EdgeInsets.only(
-                                  left: 15, bottom: 11, top: 11, right: 15),
-                              hintText: "Password",
-                              border: OutlineInputBorder(),
-                            ),
-                          ),
-                        ),
-                        const SizedBox(
-                          height: 20,
-                        ),
-                        SizedBox(
-                          width: 400,
-                          child: TextField(
-                            controller: confirmpassword,
-                            cursorColor: Colors.black,
-                            obscureText: true,
-                            keyboardType: TextInputType.text,
-                            decoration: const InputDecoration(
-                              contentPadding: EdgeInsets.only(
-                                  left: 15, bottom: 11, top: 11, right: 15),
-                              hintText: "Confirm Password",
-                              border: OutlineInputBorder(),
-                            ),
-                          ),
-                        ),
-                        const SizedBox(
-                          height: 50,
-                        ),
-                        ElevatedButton(
-                          // onPressed: postdata,
-                          onPressed: () {
-                            if (password.text != confirmpassword.text) {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(
-                                      content: Text("Password Mismatch")));
-                            } else {
-                              postdata();
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(
-                                      content:
-                                          Text("User Signup Successfully")));
-                            }
-                          },
-                          child: const Text('Submit'),
-                          style: ElevatedButton.styleFrom(
-                            primary: Colors.blue,
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 40, vertical: 20),
-                            textStyle: const TextStyle(
-                              fontSize: 30,
-                            ),
-                          ),
-                        ),
-                        const SizedBox(
-                          height: 50,
-                        ),
-                        Row(
+                      ),
+                      const SizedBox(
+                        height: 30,
+                      ),
+                      Flexible(
+                        child: Row(
                           children: [
-                            RichText(
-                              text: TextSpan(children: [
-                                const TextSpan(
-                                    text: "Already have account?",
-                                    style: TextStyle(color: Colors.black)),
-                                TextSpan(
-                                    text: "Login",
-                                    style: const TextStyle(
-                                        color: Colors.blue,
-                                        fontWeight: FontWeight.bold,
-                                        decoration: TextDecoration.underline),
-                                    recognizer: TapGestureRecognizer()
-                                      ..onTap = () {
-                                        Navigator.push(
-                                            context,
-                                            MaterialPageRoute(
-                                                builder: (context) =>
-                                                    const Loginpage()));
-                                      })
-                              ]),
+                            Flexible(
+                              child: Column(
+                                children: [
+                                  SizedBox(
+                                    width: 400,
+                                    child: TextField(
+                                      controller: userid,
+                                      cursorColor: Colors.black,
+                                      keyboardType: TextInputType.text,
+                                      decoration: const InputDecoration(
+                                        contentPadding: EdgeInsets.only(
+                                            left: 15,
+                                            bottom: 11,
+                                            top: 11,
+                                            right: 15),
+                                        hintText: "Faculty ID",
+                                        border: OutlineInputBorder(),
+                                      ),
+                                    ),
+                                  ),
+                                  const SizedBox(
+                                    height: 20,
+                                  ),
+                                  Flexible(
+                                    child: DropdownButtonFormField(
+                                      value: dropdownValue,
+                                      icon: const Icon(Icons.arrow_downward),
+                                      elevation: 16,
+                                      style: const TextStyle(
+                                          color: Colors.deepPurple),
+                                      onChanged: (String? newValue) {
+                                        setState(() {
+                                          dropdownValue = newValue!;
+                                        });
+                                      },
+                                      items: <String>[
+                                        'Mr ',
+                                        'Ms ',
+                                        'Prof ',
+                                        'Asst.Prof ',
+                                        'Dr '
+                                      ].map<DropdownMenuItem<String>>(
+                                          (String value) {
+                                        return DropdownMenuItem<String>(
+                                          value: value,
+                                          child: Text(value),
+                                        );
+                                      }).toList(),
+                                    ),
+                                  ),
+                                  const SizedBox(
+                                    height: 20,
+                                  ),
+                                  SizedBox(
+                                    width: 400,
+                                    child: TextField(
+                                      controller: name,
+                                      cursorColor: Colors.black,
+                                      keyboardType: TextInputType.text,
+                                      decoration: const InputDecoration(
+                                        contentPadding: EdgeInsets.only(
+                                            left: 15,
+                                            bottom: 11,
+                                            top: 11,
+                                            right: 15),
+                                        hintText: "Name",
+                                        border: OutlineInputBorder(),
+                                      ),
+                                    ),
+                                  ),
+                                  const SizedBox(
+                                    height: 20,
+                                  ),
+                                  SizedBox(
+                                    width: 400,
+                                    child: TextField(
+                                      controller: designation,
+                                      cursorColor: Colors.black,
+                                      keyboardType: TextInputType.text,
+                                      decoration: const InputDecoration(
+                                        contentPadding: EdgeInsets.only(
+                                            left: 15,
+                                            bottom: 11,
+                                            top: 11,
+                                            right: 15),
+                                        hintText: "Designation",
+                                        border: OutlineInputBorder(),
+                                      ),
+                                    ),
+                                  ),
+                                  const SizedBox(
+                                    height: 20,
+                                  ),
+                                ],
+                              ),
+                            ),
+                            const SizedBox(
+                              width: 10,
+                            ),
+                            Flexible(
+                              child: Column(
+                                children: [
+                                  SizedBox(
+                                    width: 400,
+                                    child: TextField(
+                                      controller: email,
+                                      cursorColor: Colors.black,
+                                      keyboardType: TextInputType.emailAddress,
+                                      decoration: const InputDecoration(
+                                        contentPadding: EdgeInsets.only(
+                                            left: 15,
+                                            bottom: 11,
+                                            top: 11,
+                                            right: 15),
+                                        hintText: "Email",
+                                        border: OutlineInputBorder(),
+                                      ),
+                                    ),
+                                  ),
+                                  const SizedBox(
+                                    height: 20,
+                                  ),
+                                  SizedBox(
+                                    width: 400,
+                                    child: TextField(
+                                      controller: contact,
+                                      cursorColor: Colors.black,
+                                      keyboardType: TextInputType.number,
+                                      decoration: const InputDecoration(
+                                        contentPadding: EdgeInsets.only(
+                                            left: 15,
+                                            bottom: 11,
+                                            top: 11,
+                                            right: 15),
+                                        hintText: "Contact",
+                                        border: OutlineInputBorder(),
+                                      ),
+                                    ),
+                                  ),
+                                  const SizedBox(
+                                    height: 20,
+                                  ),
+                                  SizedBox(
+                                    width: 400,
+                                    child: TextField(
+                                      controller: password,
+                                      cursorColor: Colors.black,
+                                      obscureText: true,
+                                      keyboardType: TextInputType.text,
+                                      decoration: const InputDecoration(
+                                        contentPadding: EdgeInsets.only(
+                                            left: 15,
+                                            bottom: 11,
+                                            top: 11,
+                                            right: 15),
+                                        hintText: "Password",
+                                        border: OutlineInputBorder(),
+                                      ),
+                                    ),
+                                  ),
+                                  const SizedBox(
+                                    height: 20,
+                                  ),
+                                  SizedBox(
+                                    width: 400,
+                                    child: TextField(
+                                      controller: confirmpassword,
+                                      cursorColor: Colors.black,
+                                      obscureText: true,
+                                      keyboardType: TextInputType.text,
+                                      decoration: const InputDecoration(
+                                        contentPadding: EdgeInsets.only(
+                                            left: 15,
+                                            bottom: 11,
+                                            top: 11,
+                                            right: 15),
+                                        hintText: "Confirm Password",
+                                        border: OutlineInputBorder(),
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
                             ),
                           ],
                         ),
-                        const SizedBox(
-                          height: 50,
+                      ),
+                      const SizedBox(
+                        height: 50,
+                      ),
+                      ElevatedButton(
+                        // onPressed: postdata,
+                        onPressed: () {
+                          if (password.text != confirmpassword.text) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                    content: Text("Password Mismatch")));
+                          } else {
+                            postdata();
+                            ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                    content: Text("User Signup Successfully")));
+                          }
+                        },
+                        child: const Text('Submit'),
+                        style: ElevatedButton.styleFrom(
+                          primary: Colors.blue,
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 40, vertical: 20),
+                          textStyle: const TextStyle(
+                            fontSize: 30,
+                          ),
                         ),
-                      ],
-                    ),
+                      ),
+                      const SizedBox(
+                        height: 50,
+                      ),
+                      Row(
+                        children: [
+                          RichText(
+                            text: TextSpan(children: [
+                              const TextSpan(
+                                  text: "Already have account?",
+                                  style: TextStyle(color: Colors.black)),
+                              TextSpan(
+                                  text: "Login",
+                                  style: const TextStyle(
+                                      color: Colors.blue,
+                                      fontWeight: FontWeight.bold,
+                                      decoration: TextDecoration.underline),
+                                  recognizer: TapGestureRecognizer()
+                                    ..onTap = () {
+                                      Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                              builder: (context) =>
+                                                  const Loginpage()));
+                                    })
+                            ]),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(
+                        height: 50,
+                      ),
+                    ],
                   ),
                 ),
               ],

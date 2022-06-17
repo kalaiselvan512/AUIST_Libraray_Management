@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:istlibrary_admin/Screens/Book_Info/domain.dart';
 import 'package:istlibrary_admin/screens/widgets/responsive.dart';
+import 'package:localstorage/localstorage.dart';
 
 class FloatingQuickAccessBar extends StatefulWidget {
   const FloatingQuickAccessBar({
@@ -14,6 +16,7 @@ class FloatingQuickAccessBar extends StatefulWidget {
 }
 
 class _FloatingQuickAccessBarState extends State<FloatingQuickAccessBar> {
+  final LocalStorage storage = LocalStorage('lib_app');
   List _isHovering = [false, false, false, false];
   List<Widget> rowElements = [];
 
@@ -41,7 +44,15 @@ class _FloatingQuickAccessBarState extends State<FloatingQuickAccessBar> {
             value ? _isHovering[i] = true : _isHovering[i] = false;
           });
         },
-        onTap: () {},
+        onTap: () {
+          Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => const Domainpage(
+                        opacity: 0.0,
+                      )));
+          storage.setItem('domain', items[i]);
+        },
         child: Text(
           items[i],
           style: TextStyle(
